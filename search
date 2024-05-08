@@ -1,0 +1,272 @@
+
+<link rel="stylesheet" href="https://s3.amazonaws.com/assets.woorank.com/smartsearch/styles.css">
+<div class="wp-demo-layout-container">
+  <template id="custom-styles__template">
+    <style type="text/css">
+      input[type="text"] {
+        border: none;
+        background-color: transparent;
+      }
+      input[type="text"]:focus,
+      input[type="text"]:hover,
+      input[type="text"]:focus-within,
+      input[type="text"]:target,
+      input[type="text"]:focus-visible {
+        outline: none;
+        border: none;
+        background-color: transparent;
+      }
+      .imagefinder-field__drop-area {
+        display:flex;
+        padding:40px 24px;
+        flex-direction:column;
+        align-items:center;
+        gap: 24px;
+        align-self:stretch;
+        border-radius:8px;
+        border:1px solid #e6e9ed;
+      }
+      .imagefinder-field__drop-area.dragging-state {
+        border: 1px dashed #119ff7;
+        background: #f2faff;
+      }
+      .imagefinder-field__drop-area__icon {
+        width: 100;
+        height:100;
+      }
+      .imagefinder-field__drop-area.dragging-state > .imagefinder-field__drop-area__prompt-msg,
+      .imagefinder-field__drop-area.dragging-state > .imagefinder-field__drop-area__upload-button,
+      .imagefinder-field__drop-area.dragging-state > .imagefinder-field__drop-area__icon {
+        pointer-events: none;
+        visibility: hidden;
+      }
+      .imagefinder-field__drop-area__upload-button {
+        display:flex;
+        padding:12px 40px 12px 32px;
+        align-items:center;
+        gap:10px;
+        color:#fff !important;
+        background-color:#000;
+        cursor:pointer;
+      }
+      .imagefinder-field__drop-area__prompt-msg {
+        color:#000;
+        text-align:center;
+        font-size:18px;
+        font-style:normal;
+        font-weight:700;
+        line-height:100%;
+        letter-spacing:.2px;
+      }
+      .imagefinder-field__drop-area__drop-msg {
+        pointer-events: none;
+        color: #119ff7 !important;
+        text-align:center;
+        font-size:18px;
+        font-style:normal;
+        font-weight:700;
+        line-height:100%;
+        letter-spacing:.2px;
+      }
+    </style>
+  </template>
+  <template id="imagefinder-field__template">
+    <div class="imagefinder-field">
+      <div class="imagefinder-field__drop-area" hawksearch-imagefinder-droparea>
+        <img class="imagefinder-field__drop-area__icon" src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/drop-image.svg" alt="Drop image">
+        <p class="imagefinder-field__drop-area__prompt-msg">{{strings.dragImageMessage}}</p>
+        <p class="imagefinder-field__drop-area__drop-msg">{{strings.dropImageMessage}}</p>
+        <label class="imagefinder-field__drop-area__upload-button">
+          <input hawksearch-imagefinder-fileinput type="file" accept="image/*" capture="environment">
+          <img height="20" width="21" src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/upload.svg" alt="Upload image">
+          {{strings.uploadImageMessage}}
+        </label>
+        <div class="imagefinder-field__drop-area__image-display" hawksearch-imagefinder-display></div>
+      </div>
+    </div>
+  </template>
+  <template id="search-results-item__template">
+    <div class="search-results-list__item search-results-list__item--{{type}}">
+        {{#if pinned}}
+        <span class="search-results-list__item__pin">
+            <hawksearch-icon name="star"></hawksearch-icon>
+        </span>
+        {{/if}}
+        {{#if (lt salePrice price)}}
+        <span class="search-results-list__item__sale-indicator">{{strings.sale}}</span>
+        {{/if}}
+        <a hawksearch-link href="{{url}}" class="search-results-list__item__image" aria-label="{{title}}">
+            <img hawksearch-image src="{{imageUrl}}" alt="">
+        </a>
+        <div class="search-results-list__item__title">
+            <a hawksearch-link href="{{url}}">{{title}}</a>
+        </div>
+        {{#if rating}}
+        <hawksearch-rating rating="{{rating}}"></hawksearch-rating>
+        {{/if}}
+        {{#unless (eq price undefined)}}
+        <div class="search-results-list__item__price" itemprop="offers" itemtype="http://schema.org/Offer" itemscope>
+            {{#if (lt salePrice price)}}
+            <span class="search-results-list__item__price__original">{{currency price}}</span>
+            <span class="search-results-list__item__price__current" itemprop="price">{{currency salePrice}}</span>
+            {{else}}
+            <span class="search-results-list__item__price-__current" itemprop="price">{{currency price}}</span>
+            {{/if}}
+        </div>
+        {{/unless}}
+        <hawksearch-variant-selector></hawksearch-variant-selector>
+    </div>
+  </template>
+  <script type="text/javascript">
+    var HawkSearch = HawkSearch || {};
+
+    HawkSearch.config = {
+        clientId: "26c96d4f79a148d581963fe1c18dfb4e",
+        components: {
+          'search-field': {
+            strings: {
+              placeholder: 'Search by Keywords'
+            }
+          },
+          'conceptsearch-field': {
+            strings: {
+              placeholder: 'Search by a Concept'
+            }
+          },
+          'imagesearch-field': {
+            strings: {
+              placeholder: 'Describe an image'
+            }
+          },
+          'imagefinder-field': {
+            template: 'imagefinder-field__template',
+            strings: {
+              dragImageMessage: 'Search By Image',
+              dropImageMessage: 'Drop an image here'
+            }
+          },
+          'search-results-item': {
+              template: 'search-results-item__template'
+          }
+        },
+        search: {
+            url: window.location.pathname,
+            itemTypes: {
+        default: "product"
+    }
+        },
+        css: {
+          customStyles: 'custom-styles__template'
+        },
+        debug: true
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@bridgeline-digital/hawksearch-handlebars-ui@5.1.0-beta.6/dist/index.js" defer=""></script>
+  <div id="wp-keyword-search" class="tab-container" data-tab-index="0">
+    <div class="wp-demo-search-field-container">
+      <div class="wp-demo-search-field-bar">
+        <span class="wp-demo-search-field-bar-icon">
+          <img src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/search.svg" alt="search">
+        </span>
+        <hawksearch-search-field style="flex: 1;"></hawksearch-search-field>
+        <div class="wp-demo-search-field-bar-divider"></div>
+        <a class="wp-demo-search-field-bar-link tab-switcher" data-tab-index="1">or Concepts</a>
+      </div>
+      <div class="wp-demo-search-field-actions">
+        <a id="open-image-dialog" class="wp-demo-search-field-actions-button tab-switcher" data-tab-index="2">
+          <span class="wp-demo-search-field-actions-icon">
+            <img src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/image.svg" alt="image">
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept Search Tab -->
+  <div id="wp-concept-search" class="tab-container" data-tab-index="1">
+    <div class="wp-demo-search-field-container">
+      <div class="wp-demo-search-field-bar">
+        <span class="wp-demo-search-field-bar-icon">
+          <img src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/search.svg" alt="search">
+        </span>
+        <hawksearch-conceptsearch-field style="flex: 1;"></hawksearch-conceptsearch-field>
+        <div class="wp-demo-search-field-bar-divider"></div>
+        <a class="wp-demo-search-field-bar-link tab-switcher" data-tab-index="0">or Keywords</a>
+      </div>
+      <div class="wp-demo-search-field-actions">
+        <a id="open-image-dialog" class="wp-demo-search-field-actions-button tab-switcher" data-tab-index="2">
+          <span class="wp-demo-search-field-actions-icon">
+            <img src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/image.svg" alt="image">
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Search -->
+  <div id="wp-image-search" class="tab-container" data-tab-index="2">
+    <div id="image-upload-dialog" class="wp-demo-search-field-image-container">
+      <div class="wp-demo-search-field-image-dialog">
+        <a id="image-upload-close-button" class="wp-demo-search-field-image-close tab-switcher" data-tab-index="1" tabindex="0">
+          <img src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/cross.svg" alt="Close">
+        </a>
+        <div class="wp-demo-search-field-image-dialog-title">
+          <h2>Image Search</h2>
+        </div>
+        <div class="wp-demo-search-field-image-dialog-body">
+          <hawksearch-imagefinder-field></hawksearch-imagefinder-field>
+          <div class="wp-demo-search-field-bar">
+            <span class="wp-demo-search-field-bar-icon">
+              <img src="https://s3.amazonaws.com/assets.woorank.com/smartsearch/search.svg" alt="image">
+            </span>
+            <hawksearch-imagesearch-field style="flex: 1;"></hawksearch-imagesearch-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="hawksearch-search-results" style="margin-top: 16px;">
+    <hawksearch-search-results></hawksearch-search-results>
+  </div>
+</div>
+<script>
+// tabs handler
+document.addEventListener("DOMContentLoaded", function () {
+  let previousActiveTabIndex = 0;
+
+  document.querySelectorAll('.wp-demo-layout-container .tab-container').forEach(function (tabContainer) {
+    if (parseInt(tabContainer.dataset.tabIndex) === previousActiveTabIndex) {
+      tabContainer.style.display = 'block';
+    } else {
+      tabContainer.style.display = 'none';
+    }
+  });
+
+  document.querySelectorAll('.wp-demo-layout-container .tab-switcher').forEach(function (tabSwitcher) {
+    tabSwitcher.addEventListener('click', tabSwitchHandler);
+    tabSwitcher.addEventListener('keypress', tabSwitchHandler);
+  });
+
+  function tabSwitchHandler(event) {
+    event.preventDefault();
+    // event.which === 13 means the 'Enter' key is pressed
+    if ((event.type === 'keypress' && event.which === 13) || event.type === 'click') {
+      let tabClicked = parseInt(this.dataset.tabIndex);
+
+      if (tabClicked !== previousActiveTabIndex) {
+        document.querySelectorAll('.wp-demo-layout-container .tab-container').forEach(function (tabContainer) {
+          if (parseInt(tabContainer.dataset.tabIndex) === tabClicked) {
+            document.querySelectorAll('.tab-container').forEach(function (tab) {
+              tab.style.display = 'none';
+            });
+            tabContainer.style.display = 'block';
+            previousActiveTabIndex = parseInt(tabContainer.dataset.tabIndex);
+            return;
+          }
+        });
+      }
+    }
+  }
+});
+</script>
